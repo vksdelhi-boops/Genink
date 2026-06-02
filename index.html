@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geninks | Read & Earn</title>
+    <style>
+        :root { --primary: #d97706; --secondary: #f59e0b; --dark: #0f0a06; --darker: #050303; --light: #f1f2f6; --card-bg: #17100b; --accent: #fbbf24; --text-muted: #c7b299; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: var(--darker); color: white; }
+        header { display: flex; justify-content: space-between; align-items: center; padding: 15px 50px; background: rgba(5, 3, 3, 0.95); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #332a1f; }
+        .logo { font-size: 1.8rem; font-weight: 900; letter-spacing: -1px; }
+        .logo span { color: var(--accent); }
+        .nav-links a { color: white; text-decoration: none; margin: 0 15px; font-weight: 500; transition: 0.3s; }
+        .nav-links a:hover { color: var(--accent); }
+        .btn { padding: 10px 25px; border-radius: 25px; text-decoration: none; font-weight: 600; cursor: pointer; border: none; transition: 0.3s; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: #b45309; transform: scale(1.05); }
+        .btn-outline { border: 2px solid var(--primary); color: var(--primary); background: transparent; }
+        .btn-outline:hover { background: var(--primary); color: white; }
+        .btn-buy { background: linear-gradient(135deg, #fbbf24, #f59e0b); color: black; width: 100%; margin-top: 10px; }
+        .btn-buy:hover { transform: scale(1.02); box-shadow: 0 5px 20px rgba(251, 191, 36, 0.3); }
+        .hero { padding: 80px 50px; background: linear-gradient(135deg, #0f0a06 0%, #1a1510 100%); display: flex; align-items: center; justify-content: space-between; min-height: 500px; }
+        .hero-text { max-width: 550px; }
+        .hero-text h1 { font-size: 3.5rem; margin-bottom: 20px; background: linear-gradient(45deg, #d97706, #fbbf24); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero-text p { color: var(--text-muted); font-size: 1.2rem; margin-bottom: 30px; line-height: 1.6; }
+        .stat-box { text-align: center; }
+        .stat-number { font-size: 2rem; font-weight: bold; color: var(--accent); }
+        .stat-label { color: var(--text-muted); font-size: 0.9rem; }
+        .hero-tree { position: relative; font-size: 180px; animation: sway 5s ease-in-out infinite; text-align: center; }
+        .floating-book { position: absolute; font-size: 40px; animation: float 4s ease-in-out infinite; }
+        .fb1 { left: 20px; bottom: -20px; animation-delay: 0s; }
+        .fb2 { left: -30px; bottom: 10px; animation-delay: 0.5s; }
+        .fb3 { right: -20px; bottom: 20px; animation-delay: 1s; }
+        .fb4 { right: 20px; bottom: -30px; animation-delay: 1.5s; }
+        @keyframes sway { 0%,100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } }
+        @keyframes float { 0%,100% { transform: translateY(0px); } 50% { transform: translateY(-15px); } }
+        .genre-section { padding: 50px; }
+        .genre-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; padding: 0 50px; }
+        .genre-card { background: var(--card-bg); padding: 30px; border-radius: 15px; text-align: center; cursor: pointer; transition: 0.3s; }
+        .genre-card:hover { background: var(--primary); transform: scale(1.05); }
+        .genre-card span { font-size: 1.5rem; }
+        .section-title { font-size: 1.8rem; padding: 40px 50px 20px; }
+        .book-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 30px; padding: 0 50px 50px; }
+        .book-card { background: var(--card-bg); border-radius: 15px; overflow: hidden; transition: 0.3s; cursor: pointer; position: relative; }
+        .book-card:hover { transform: translateY(-8px); box-shadow: 0 10px 30px rgba(217, 119, 6, 0.2); }
+        .book-cover { height: 280px; position: relative; display: flex; align-items: center; justify-content: center; background-size: cover; background-position: center; }
+        .cover-1 { background: linear-gradient(45deg, #1e3a5f, #3b82f6); }
+        .cover-2 { background: linear-gradient(45deg, #5b21b6, #a855f7); }
+        .cover-3 { background: linear-gradient(45deg, #166534, #22c55e); }
+        .cover-4 { background: linear-gradient(45deg, #9a3412, #f97316); }
+        .badge-free { position: absolute; top: 10px; left: 10px; background: #166534; color: white; padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; }
+        .badge-paid { position: absolute; top: 10px; right: 10px; background: var(--accent); color: black; padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; }
+        .delete-btn { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #dc2626; color: white; padding: 12px 24px; border-radius: 8px; font-size: 0.9rem; cursor: pointer; z-index: 10; display: none; font-weight: bold; }
+        .show-delete .delete-btn { display: block; }
+        .book-details { padding: 15px; }
+        .book-title { font-size: 1.1rem; font-weight: bold; margin-bottom: 5px; }
+        .book-author { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 5px; }
+        .book-genre { color: var(--accent); font-size: 0.8rem; margin-bottom: 10px; }
+        .book-stats-row { display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-muted); }
+        .dashboard-section { background: var(--dark); padding: 50px; margin-top: 50px; }
+        .dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+        .earnings-card { background: #0f0a06; padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #332a1f; }
+        .earnings-card h3 { color: var(--accent); margin-bottom: 15px; }
+        .earnings-row { display: flex; justify-content: space-between; margin-bottom: 10px; color: var(--text-muted); }
+        .earnings-row strong { color: white; }
+        .upload-form { background: var(--card-bg); padding: 40px; border-radius: 15px; max-width: 800px; }
+        .form-group { margin-bottom: 25px; }
+        .form-group label { display: block; margin-bottom: 10px; font-weight: 600; color: var(--text-muted); }
+        .form-group input, .form-group select { width: 100%; padding: 15px; background: var(--dark); border: 1px solid #332a1f; border-radius: 10px; color: white; font-size: 1rem; }
+        .form-group input:focus { outline: none; border-color: var(--primary); }
+        .price-input { display: flex; align-items: center; gap: 10px; }
+        .price-input span { font-size: 1.2rem; color: var(--accent); }
+        .chapters-config { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .config-box { background: #0f0a06; padding: 20px; border-radius: 10px; border: 1px solid #332a1f; }
+        .config-box h4 { margin-bottom: 15px; color: var(--accent); }
+        footer { background: #050303; padding: 40px 50px; text-align: center; color: var(--text-muted); margin-top: 50px; }
+        .auth-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; justify-content: center; align-items: center; }
+        .auth-box { background: var(--card-bg); padding: 40px; border-radius: 15px; width: 380px; color: white; text-align: center; position: relative; }
+        .auth-box h2 { margin-bottom: 25px; color: var(--accent); }
+        .auth-input { width: 100%; padding: 15px; margin-bottom: 15px; background: var(--dark); border: 1px solid #332a1f; color: white; border-radius: 8px; font-size: 1rem; }
+        .auth-input:focus { border-color: var(--accent); outline: none; }
+        .auth-switch { color: var(--text-muted); margin-top: 15px; }
+        .auth-switch a { color: var(--primary); text-decoration: none; font-weight: 600; }
+        .close-modal { position: absolute; top: 15px; right: 20px; background: none; border: none; color: var(--text-muted); font-size: 1.8rem; cursor: pointer; }
+        .notification { position: fixed; top: 20px; right: 20px; padding: 15px 30px; border-radius: 10px; z-index: 3000; display: none; color: white; }
+        .notification.show { display: block; }
+        .notification.success { background: #166534; }
+        .notification.error { background: #dc2626; }
+        .upload-info { background: var(--card-bg); padding: 15px 20px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid var(--accent); }
+        .user-greeting { color: var(--accent); margin-right: 15px; font-weight: 600; }
+        .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+        .empty-state span { font-size: 4rem; display: block; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+    <div id="loginModal" class="auth-modal">
+        <div class="auth-box">
+            <button class="close-modal" onclick="closeAuthModal()">×</button>
+            <h2>LOGIN</h2>
+            <input id="loginEmail" type="email" class="auth-input" placeholder="Email">
+            <input id="loginPassword" type="password" class="auth-input" placeholder="Password">
+            <button onclick="loginUser()" class="btn btn-primary" style="width: 100%; margin-bottom: 10px;">Log In</button>
+            <button onclick="loginWithGoogle()" class="btn btn-outline" style="width: 100%; margin-bottom: 15px;">Continue with Google</button>
+            <p class="auth-switch">New here? <a href="#" onclick="switchAuth('signup')">Sign Up</a></p>
+        </div>
+    </div>
+
+    <div id="signupModal" class="auth-modal">
+        <div class="auth-box">
+            <button class="close-modal" onclick="closeAuthModal()">×</button>
+            <h2>SIGN UP</h2>
+            <input id="signupEmail" type="email" class="auth-input" placeholder="Email">
+            <input id="signupPassword" type="password" class="auth-input" placeholder="Create Password">
+            <button onclick="signupUser()" class="btn btn-primary" style="width: 100%;">Create Account</button>
+            <p class="auth-switch">Already have account? <a href="#" onclick="switchAuth('login')">Log In</a></p>
+        </div>
+    </div>
+
+    <div id="notification" class="notification"></div>
+
+    <header>
+        <div class="logo">GEN<span>INKS</span></div>
+        <nav class="nav-links">
+            <a href="#genres">Browse</a>
+            <a href="#library">Library</a>
+            <a href="#dashboard">Publish</a>
+        </nav>
+        <div id="authButtons">
+            <button class="btn btn-outline" onclick="openAuthModal('login')">Log In</button>
+            <button class="btn btn-primary" onclick="scrollToDashboard()">Start Creating</button>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="hero-text">
+            <h1>Where Stories Take Root.</h1>
+            <p>Discover novels, fantasy adventures, romances and mysteries written by independent creators from around the world.</p>
+            <button class="btn btn-primary" style="font-size:1.2rem;padding:15px 40px;" onclick="document.getElementById('library').scrollIntoView()">Explore Library</button>
+        </div>
+        <div class="hero-tree">🌳<div class="floating-book fb1">📕</div><div class="floating-book fb2">📘</div><div class="floating-book fb3">📗</div><div class="floating-book fb4">📙</div></div>
+    </section>
+
+    <div style="padding: 0 50px 50px; display: flex; justify-content: center;">
+        <div class="stat-box"><div class="stat-number" id="totalBooks">0</div><div class="stat-label">Stories Published</div></div>
+    </div>
+
+    <section id="genres" class="genre-section">
+        <h2 class="section-title">📚 Browse Genres</h2>
+        <div class="genre-grid">
+            <div class="genre-card" onclick="filterByGenre('Fantasy')"><span>⚔️ Fantasy</span></div>
+            <div class="genre-card" onclick="filterByGenre('Romance')"><span>💕 Romance</span></div>
+            <div class="genre-card" onclick="filterByGenre('Mystery')"><span>🕵️ Mystery</span></div>
+            <div class="genre-card" onclick="filterByGenre('Thriller')"><span>🔥 Thriller</span></div>
+            <div class="genre-card" onclick="filterByGenre('Adventure')"><span>🌍 Adventure</span></div>
+            <div class="genre-card" onclick="filterByGenre('Historical')"><span>🏰 Historical</span></div>
+        </div>
+    </section>
+
+    <h2 class="section-title" id="library">📖 All Stories</h2>
+    <div id="bookGrid" class="book-grid"><div class="empty-state"><span>📚</span><p>Loading stories...</p></div></div>
+
+    <section class="dashboard-section" id="dashboard">
+        <div class="dashboard-header"><h2>Creator Studio</h2><span style="color: var(--text-muted);">Upload your stories</span></div>
+                <div class="upload-info"><strong>💰 Revenue Sharing:</strong> Writers keep 80% of paid chapter earnings. <span id="adminInfo" style="display:none; color: var(--primary);"> | ✅ Logged in - You can DELETE!</span></div>
+
+        <div class="earnings-card">
+            <h3>💰 Earnings Dashboard</h3>
+            <div class="earnings-row"><span>Total Revenue:</span><strong>₹0</strong></div>
+            <div class="earnings-row"><span>Writer Share (80%):</span><strong>₹0</strong></div>
+            <div class="earnings-row"><span>Genink Share (20%):</span><strong>₹0</strong></div>
+        </div>
+
+        <div class="upload-form">
+            <h3 style="margin-bottom: 30px;">📚 Upload New Book</h3>
+            <div class="form-group"><label>Book Title</label><input id="bookTitle" type="text" placeholder="Enter book title..."></div>
+            <div class="form-group"><label>Author Name</label><input id="bookAuthor" type="text" placeholder="Your pen name..."></div>
+            <div class="form-group"><label>Book Cover Image</label><input id="bookCover" type="file" accept="image/*" style="background: var(--dark); padding: 15px; border-radius: 10px; border: 1px solid #332a1f; width: 100%;"></div>
+            <div class="form-group">
+                <label>Genre</label>
+                <select id="bookGenre">
+                    <option>Fantasy</option><option>Romance</option><option>Mystery</option>
+                    <option>Thriller</option><option>Adventure</option><option>Historical</option>
+                </select>
+            </div>
+            <div class="chapters-config">
+                <div class="config-box">
+                    <h4>📖 Chapters</h4>
+                    <div class="form-group"><label>Total Chapters</label><input id="totalChapters" type="number" placeholder="e.g., 20"></div>
+                    <div class="form-group"><label>Free Chapters</label><input id="freeChapters" type="number" placeholder="e.g., 3"></div>
+                </div>
+                <div class="config-box">
+                    <h4>💰 Pricing (₹)</h4>
+                    <div class="form-group"><label>Price per Chapter</label><div class="price-input"><span>₹</span><input id="pricePerChapter" type="number" placeholder="15"></div></div>
+                </div>
+            </div>
+            <button onclick="uploadBook()" class="btn btn-primary" style="width: 100%; margin-top: 20px;">📤 Upload Book</button>
+        </div>
+    </section>
+
+    <footer><p>© 2024 Geninks. All rights reserved.</p>
+    </footer>
+
+    <!-- RAZORPAY SCRIPT -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+    <!-- FIREBASE + FIRESTORE + CLOUDINARY + RAZORPAY -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDE3qSjZJC_glpEcjUs8Ben1lyIr66KkzI",
+            authDomain: "genink-auth.firebaseapp.com",
+            projectId: "genink-auth",
+            storageBucket: "genink-auth.firebasestorage.app",
+            messagingSenderId: "857511533221",
+            appId: "1:857511533221:web:5fa849bc8dbf79556a4b4c"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const googleProvider = new GoogleAuthProvider();
+        
+        let currentUser = null;
+        let books = [];
+        let purchasedChapters = {};
+
+        // Replace with your Razorpay Key
+        const RAZORPAY_KEY = "rzp_test_YOUR_KEY_ID_HERE";
+
+        async function loadBooks() {
+            books = [];
+            try {
+                const querySnapshot = await getDocs(collection(db, "books"));
+                querySnapshot.forEach((docSnap) => {
+                    books.push({ firestoreId: docSnap.id, ...docSnap.data() });
+                });
+            } catch (e) { console.log("No books:", e.message); }
+            document.getElementById('totalBooks').textContent = books.length;
+            renderBooks();
+        }
+
+        async function loadUserPurchases() {
+            if (!currentUser) return;
+            const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+            if (userDoc.exists()) {
+                purchasedChapters = userDoc.data().purchasedChapters || {};
+            }
+        }
+
+        function renderBooks(filterGenre = null) {
+            const grid = document.getElementById('bookGrid');
+            let displayBooks = filterGenre ? books.filter(b => b.genre === filterGenre) : books;
+            if (displayBooks.length === 0) { grid.innerHTML = '<div class="empty-state"><span>📚</span><p>No stories yet. Be the first to publish!</p></div>'; return; }
+            grid.innerHTML = '';
+            displayBooks.forEach((book) => {
+                const card = document.createElement('div');
+                card.className = 'book-card' + (currentUser ? ' show-delete' : '');
+                const freeBadge = book.freeChapters > 0 ? '<span class="badge-free">FREE</span>' : '';
+                const hasPrice = book.price > 0;
+                const paidBadge = hasPrice ? '<span class="badge-paid">₹' + book.price + '/CH</span>' : '';
+                const coverClass = book.coverUrl ? '' : 'cover-' + ((books.indexOf(book) % 4) + 1);
+                const coverStyle = book.coverUrl ? 'background-image: url(' + book.coverUrl + ')' : '';
+                
+                let actionButtons = '';
+                if (hasPrice && currentUser) {
+                    const chapterId = book.firestoreId + '_ch1';
+                    const isOwned = purchasedChapters[chapterId];
+                    if (isOwned) {
+                        actionButtons = '<button class="btn btn-buy" style="background: #166534; margin-top: 10px;">✅ Owned</button>';
+                    } else {
+                        actionButtons = '<button class="btn btn-buy" onclick="buyChapter(\'' + book.firestoreId + '\', ' + book.price + ', \'' + book.title + '\')">Unlock Chapter - ₹' + book.price + '</button>';
+                    }
+                }
+                
+                card.innerHTML = '<div class="book-cover ' + coverClass + '" style="' + coverStyle + '">' + freeBadge + paidBadge + (book.firestoreId && currentUser ? '<button class="delete-btn" onclick="deleteBook(\'' + book.firestoreId + '\')">🗑️ DELETE</button>' : '') + '</div><div class="book-details"><div class="book-title">' + book.title + '</div><div class="book-author">By ' + book.author + '</div><div class="book-genre">' + book.genre + '</div><div class="book-stats-row"><span>📖 ' + book.totalChapters + ' Ch</span><span>Free: ' + book.freeChapters + '</span></div>' + actionButtons + '</div>';
+                grid.appendChild(card);
+            });
+        }
+
+        window.filterByGenre = (genre) => { renderBooks(genre); document.getElementById('library').scrollIntoView({behavior: 'smooth'}); };
+        window.openAuthModal = (type) => { document.getElementById(type === 'login' ? 'loginModal' : 'signupModal').style.display = 'flex'; };
+        window.closeAuthModal = () => { document.querySelectorAll('.auth-modal').forEach(m => m.style.display = 'none'); };
+        window.switchAuth = (type) => { closeAuthModal(); setTimeout(() => openAuthModal(type), 100); };
+        window.scrollToDashboard = () => { document.getElementById('dashboard').scrollIntoView({behavior: 'smooth'}); };
+
+        window.loginUser = async () => {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            try {
+                const userCred = await signInWithEmailAndPassword(auth, email, password);
+                showNotification('Login successful!', 'success');
+                closeAuthModal();
+                updateNav(userCred.user);
+            } catch (e) {
+                if (e.code === 'auth/invalid-email') showNotification('Please enter a valid email.', 'error');
+                else if (e.code === 'auth/user-not-found') showNotification('No account found. Sign up first.', 'error');
+                else if (e.code === 'auth/wrong-password') showNotification('Incorrect password.', 'error');
+                else showNotification(e.message, 'error');
+            }
+        };
+
+        window.signupUser = async () => {
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            try {
+                const userCred = await createUserWithEmailAndPassword(auth, email, password);
+                showNotification('Account created!', 'success');
+                closeAuthModal();
+                updateNav(userCred.user);
+            } catch (e) {
+                if (e.code === 'auth/email-already-in-use') showNotification('Email already registered.', 'error');
+                else if (e.code === 'auth/weak-password') showNotification('Password too weak.', 'error');
+                else showNotification(e.message, 'error');
+            }
+        };
+
+        window.loginWithGoogle = async () => {
+            try {
+                googleProvider.setCustomParameters({ prompt: 'select_account' });
+                const result = await signInWithPopup(auth, googleProvider);
+                showNotification('Welcome, ' + result.user.displayName + '!', 'success');
+                closeAuthModal();
+                updateNav(result.user);
+            } catch (e) {
+                if (e.code === 'auth/popup-closed-by-user') showNotification('Popup closed. Try again.', 'error');
+                else showNotification('Google login failed.', 'error');
+            }
+        };
+
+        function updateNav(user) {
+            currentUser = user;
+            document.getElementById('adminInfo').style.display = user ? 'inline' : 'none';
+            document.getElementById('authButtons').innerHTML = user 
+                ? '<span class="user-greeting">Hi, ' + user.email.split('@')[0] + '</span><button class="btn btn-outline" onclick="logout()">Logout</button>'
+                : '<button class="btn btn-outline" onclick="openAuthModal(\'login\')">Log In</button><button class="btn btn-primary" onclick="scrollToDashboard()">Start Creating</button>';
+            if (user) loadUserPurchases();
+            renderBooks();
+        }
+
+        window.logout = async () => { await signOut(auth); currentUser = null; purchasedChapters = {}; showNotification('Logged out!', 'success'); updateNav(null); };
+
+        function showNotification(msg, type) {
+            const el = document.getElementById('notification');
+            el.textContent = msg;
+            el.className = 'notification show ' + type;
+            setTimeout(() => el.classList.remove('show'), 3000);
+        }
+
+        window.uploadCoverImage = async (file) => {
+            if (!file) return null;
+            const formData = new FormData();
+            formData.append("file", file);
+            formData.append("upload_preset", "genink_covers");
+            const response = await fetch("https://api.cloudinary.com/v1_1/deqh2lvky/image/upload", { method: "POST", body: formData });
+            const data = await response.json();
+            return data.secure_url;
+        };
+
+        window.uploadBook = async () => {
+            const title = document.getElementById('bookTitle').value;
+            const author = document.getElementById('bookAuthor').value;
+            const genre = document.getElementById('bookGenre').value;
+            const total = parseInt(document.getElementById('totalChapters').value) || 10;
+            const free = parseInt(document.getElementById('freeChapters').value) || 0;
+            const price = parseInt(document.getElementById('pricePerChapter').value) || 15;
+            
+            if (!title || !author) { showNotification('Please fill in title and author!', 'error'); return; }
+            
+            let coverUrl = null;
+            const coverFile = document.getElementById('bookCover').files[0];
+            if (coverFile) {
+                showNotification('Uploading image...', 'success');
+                try { coverUrl = await uploadCoverImage(coverFile); } 
+                catch (e) { showNotification('Image upload failed', 'error'); }
+            }
+            
+            await addDoc(collection(db, "books"), { title, author, genre, freeChapters: free, totalChapters: total, price, coverUrl, createdAt: new Date() });
+            await loadBooks();
+            showNotification('Book uploaded!', 'success');
+            
+            document.getElementById('bookTitle').value = '';
+            document.getElementById('bookAuthor').value = '';
+            document.getElementById('totalChapters').value = '';
+            document.getElementById('freeChapters').value = '';
+            document.getElementById('pricePerChapter').value = '';
+        };
+
+        window.deleteBook = async (firestoreId) => {
+            if (!currentUser) { showNotification('Log in to delete!', 'error'); return; }
+            if (confirm('Delete for everyone?')) {
+                await deleteDoc(doc(db, "books", firestoreId));
+                await loadBooks();
+                showNotification('Deleted!', 'success');
+            }
+        };
+
+        // RAZORPAY PAYMENT
+        window.buyChapter = async (bookId, amount, bookTitle) => {
+            if (!currentUser) {
+                showNotification('Please log in to purchase!', 'error');
+                openAuthModal('login');
+                return;
+            }
+
+            const options = {
+                key: RAZORPAY_KEY,
+                amount: amount * 100,  // Razorpay uses paise
+                currency: "INR",
+                name: "Geninks",
+                description: "Unlock: " + bookTitle,
+                handler: async function(response) {
+                    // Payment successful - save to Firestore
+                    const chapterId = bookId + '_ch1';
+                    purchasedChapters[chapterId] = true;
+                    
+                    await setDoc(doc(db, "users", currentUser.uid), {
+                        purchasedChapters: purchasedChapters
+                    }, { merge: true });
+                    
+                    showNotification('Payment successful! Chapter unlocked.', 'success');
+                    renderBooks();
+                },
+                prefill: {
+                    email: currentUser.email,
+                    name: currentUser.displayName || currentUser.email.split('@')[0]
+                },
+                theme: {
+                    color: "#d97706"
+                }
+            };
+
+            const rzp = new Razorpay(options);
+            rzp.open();
+        };
+
+        onAuthStateChanged(auth, (user) => { updateNav(user); });
+        loadBooks();
+    </script>
+</body>
+</html>
